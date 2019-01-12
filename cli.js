@@ -10,6 +10,8 @@ const optionDefinitions = [
   { name: "account", alias: "a", type: String },
   { name: "pass", alias: "l", type: String },
   { name: "backends", alias: "b", type: Array },
+
+  { name: "python_executable", type: String},
   { name: "help", type: Boolean}
 ];
 
@@ -55,11 +57,19 @@ if(args.port == 443) {
 	args.ssl = true;
 }
 
-// Connect
+if(!args.python_executable) {
+	args.python_executable = "python";
+}
 
+// ---
+// !!! temporary fixed to Rigetti
+// ---
 args.backends = [
 	"rigetti-qvm",
 	"rigetti-qpu"
 ];
+// ---
 
-QPSClient(args.host, args.port, args.ssl, args.account, args.pass, args.backends);
+// Connect
+
+QPSClient(args.host, args.port, args.ssl, args.account, args.pass, args.backends, args.python_executable);

@@ -2,14 +2,21 @@ var DDP = require("ddp");
 var login = require("ddp-login");
 var spawn = require("child_process").spawn;
 var EJSON = require("ejson");
+var QuantumCircuit = require("quantum-circuit");
 
-var shellExec = function(command, callback) {
+var shellExec = function(command, toStdin, callback) {
 	var args = command.split(" ");
 	var cmd = args[0];
 	args.shift();
 
 	var result = "";
     var child = spawn(cmd, args);
+
+    if(toStdin) {
+		child.stdin.setEncoding("utf-8");
+    	child.stdin.write(toStdin);
+    	child.stdin.end();
+    }
 
     child.stdout.on("data", function(message) {
     	result += message;
@@ -30,6 +37,80 @@ var shellExec = function(command, callback) {
       	callback(new Error(result));
       }
     });
+};
+
+var parseFixedColTable = function(tableRaw) {
+	var tableList = tableRaw.trim().split("\n");
+
+	// Extract column names and indexes
+	var cols = [];
+	if(tableList.length) {
+		var firstRow = tableList[0].trim();
+
+		var colIndexes = [];
+		var insideString = false;
+		for(var i = 0; i < firstRow.length; i++) {
+			if(firstRow[i] == " " && i < firstRow.length - 1 && firstRow[i + 1] == " ") {
+				insideString = false;
+			} else {
+				if(!insideString) {
+					colIndexes.push(i);
+					insideString = true;
+				}
+			}
+		}
+
+		var lastCol = colIndexes.length - 1;
+		for(var i = 0; i < colIndexes.length; i++) {
+			var colStart = colIndexes[i];
+			var colEnd = i < lastCol ? colIndexes[i + 1] : firstRow.length;
+			var name = firstRow.substring(colStart, colEnd).trim().toLowerCase();
+			name = name.split(" ").join("_");
+			cols.push({
+				name: name,
+				colStart: colStart,
+				colEnd: colEnd
+			});
+		}
+
+		tableList.shift();
+	}
+
+	// Extract data
+	var rows = [];
+	tableList.map(function(rowRaw) {
+		var row = {};
+		cols.map(function(col) {
+			row[col.name] = rowRaw.substring(col.colStart, col.colEnd).trim();
+		});
+		rows.push(row);
+	});
+
+	return rows;
+};
+
+var parseRigettiReservations = function(reservationsRaw) {
+	var reservationsList = reservationsRaw.trim().split("\n");
+	if(reservationsList.length) {
+		reservationsList.shift();
+	}
+	reservationsRaw = reservationsList.join("\n");
+
+	var reservations = parseFixedColTable(reservationsRaw);
+
+	reservations.map(function(reservation, index) {
+		for(var propertyName in reservation) {
+			var propertyValue = reservation[propertyName];
+			if(propertyName == "price") {
+				propertyValue = propertyValue.split("$").join("");
+				propertyValue = parseFloat(propertyValue);
+			}
+
+			reservations[index][propertyName] = propertyValue;
+		}
+	});
+
+	return reservations;
 };
 
 var parseRigettiLattices = function(latticesRaw) {
@@ -94,14 +175,16 @@ var parseRigettiLattices = function(latticesRaw) {
 	return deviceList;
 };
 
-var QPSClient = function(host, port, ssl, account, pass, backends) {
+var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecutable) {
 	host = host || "";
 	port = port || 80;
 	ssl = ssl || false;
 	account = account || null;
 	pass = pass || null;
 	backends = backends || [];
-
+	pythonExecutable = pythonExecutable || "python";
+	devMode = process.env.DEV_MODE || false;
+console.log(devMode);
 	var ddpClient = new DDP({
 		host: host,
 		port: port,
@@ -124,8 +207,29 @@ var QPSClient = function(host, port, ssl, account, pass, backends) {
 
 		ddpClient.on("message", function(msg) {
 			var message = EJSON.parse(msg);
-			if(message.python) {
-console.log(message.python);
+
+			if(message && message.command) {
+				switch(message.command) {
+
+					case "run_qvm": {
+						var circuit = new QuantumCircuit();
+						circuit.load(message.circuit);
+
+						pythonCode = circuit.exportPyquil("", false, null, null, message.lattice, message.asQVM);
+
+						shellExec(pythonExecutable + " -", pythonCode, function(e, r) {
+							var output = "";
+							if(e) {
+								output = e;
+							} else {
+								output = r;
+							}
+
+							updateBackendsOutput("rigetti", output);
+						});
+					}; break;
+
+				}
 			}
 		});
 
@@ -158,6 +262,20 @@ console.log(message.python);
 		);
 	});
 
+	var updateBackendsOutput = function(backendType, message) {
+		ddpClient.call(
+			"updateBackendsOutput",
+			[backendType, message],
+			function(err, res) {
+				if(err) {
+					console.log(err);
+				}
+			},
+			function() {
+			}
+		);
+	};
+
 	var updateBackends = function() {
 		if(!backends.map) {
 			return;
@@ -178,16 +296,26 @@ console.log(message.python);
 					backendInfo.rigettiQpu = {
 					};
 
-					backendInfo.rigettiQpu.devices = parseRigettiLattices(_lattices);
-/*
-					shellExec("qcs lattices", function(e, r) {
-						if(e) {
-							console.log(e);
-						} else {
-							backendInfo.rigettiQpu.devices = parseRigettiLattices(r);
-						}
-					});
-*/
+					if(devMode) {
+						backendInfo.rigettiQpu.devices = parseRigettiLattices(_lattices);
+						backendInfo.rigettiQpu.reservations = parseRigettiReservations(_reservations);
+					} else {
+						shellExec("qcs lattices", null, function(e, lattices) {
+							if(e) {
+								console.log(e);
+							} else {
+								backendInfo.rigettiQpu.devices = parseRigettiLattices(lattices);
+
+								shellExec("qcs reservations", null, function(e, reservations) {
+									if(e) {
+										console.log(e);
+									} else {
+										backendInfo.rigettiQpu.reservations = parseRigettiReservations(reservations);
+									}
+								});
+							}
+						});
+					}
 				}; break;
 			}
 		});
@@ -213,6 +341,16 @@ if(typeof module != "undefined" && module.exports) {
 }
 
 
+// output from QCS CLI - used when env DEV_MODE=1
+
+var _reservations = `
+
+UPCOMING COMPUTE BLOCKS
+ID    START                    END                      DURATION  LATTICE            PRICE
+903   2019-01-11 10:30 CET     2019-01-11 10:45 CET     15.00m    Aspen-1-4Q-B       $70.00
+904   2019-01-11 10:45 CET     2019-01-11 11:00 CET     15.00m    Aspen-1-2Q-B       $20.00
+
+`;
 
 
 var _lattices = `
