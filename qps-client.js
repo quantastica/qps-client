@@ -184,7 +184,7 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 	backends = backends || [];
 	pythonExecutable = pythonExecutable || "python";
 	devMode = process.env.DEV_MODE || false;
-console.log(devMode);
+
 	var ddpClient = new DDP({
 		host: host,
 		port: port,
