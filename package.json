@@ -31,6 +31,6 @@
     "ddp": "^0.12.1",
     "ddp-login": "^1.0.10",
     "ejson": "^2.1.2",
-    "quantum-circuit": "file:../quantum-circuit"
+    "quantum-circuit": "^0.9.47"
   }
 }
