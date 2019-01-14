@@ -8,7 +8,7 @@ QPS Client allows you to use <a href="https://quantum-circuit.com" target="_blan
 
 QPS Client is running on your local machine (or in the cloud) where your quantum programming environment is installed. It opens secure websocket connection with Quantum Programming Studio server and executes quantum circuits (that you design in the web UI) on your local simulator or on quantum computer.
 
-![Diagram 1](https://rawgit.com/perak/qps-client/HEAD/media/qps-client.png)
+![Diagram 1](https://github.com/perak/qps-client/blob/master/media/qps-client.png)
 
 
 ## Project status

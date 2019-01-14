@@ -1,6 +1,6 @@
 {
   "name": "ddp-client",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "Quantum Programming Studio client",
   "main": "qps-client.js",
   "scripts": {
