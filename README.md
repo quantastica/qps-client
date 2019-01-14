@@ -21,9 +21,9 @@ Under development / experimental. If you find bugs **please report** here: https
 
 1. Create <a href="https://quantum-circuit.com" target="_blank">Quantum Programming Studio</a> account.
 
-2. Install <a href="https://www.rigetti.com/forest" target="_blank">Rigetti Forrest SDK</a> on your local machine OR get access to <a href="https://www.rigetti.com/qcs" target="_blank">Rigetti QCS</a> and SSH to your QMI (Quantum Machine Image).
+2. Install <a href="https://www.rigetti.com/forest" target="_blank">Rigetti Forrest SDK</a> on your local machine OR get access to <a href="https://www.rigetti.com/qcs" target="_blank">Rigetti QCS</a> and SSH to your <a href="https://www.rigetti.com/qcs/docs/intro-to-qcs#qmi" target="_blank">QMI</a> (Quantum Machine Image).
 
-3. Install <a href="https://nodejs.org" target="_blank">node.js</a> and <a href="https://www.npmjs.com/" target="_blank">npm</a> on your local machine or on your QMI.
+3. Make sure you have <a href="https://nodejs.org" target="_blank">node.js</a> and <a href="https://www.npmjs.com/" target="_blank">npm</a> installed on your local machine (it is installed by default in QMI).
 
 4. Run following terminal command:
 

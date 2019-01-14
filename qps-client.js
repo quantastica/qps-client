@@ -293,6 +293,18 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 					backendInfo.rigettiQvm = {
 						status: "OK"
 					};
+
+					ddpClient.call(
+						"updateBackends",
+						[backendInfo],
+						function(err, res) {
+							if(err) {
+								console.log(err);
+							}
+						},
+						function() {
+						}
+					);
 				}; break;
 
 				case "rigetti-qpu": {
@@ -304,6 +316,18 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 					if(devMode) {
 						backendInfo.rigettiQpu.devices = parseRigettiLattices(_lattices);
 						backendInfo.rigettiQpu.reservations = parseRigettiReservations(_reservations);
+
+						ddpClient.call(
+							"updateBackends",
+							[backendInfo],
+							function(err, res) {
+								if(err) {
+									console.log(err);
+								}
+							},
+							function() {
+							}
+						);
 					} else {
 						shellExec("qcs lattices", null, function(e, lattices) {
 							if(e) {
@@ -316,6 +340,18 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 										console.log(e);
 									} else {
 										backendInfo.rigettiQpu.reservations = parseRigettiReservations(reservations);
+
+										ddpClient.call(
+											"updateBackends",
+											[backendInfo],
+											function(err, res) {
+												if(err) {
+													console.log(err);
+												}
+											},
+											function() {
+											}
+										);
 									}
 								});
 							}
@@ -324,18 +360,6 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 				}; break;
 			}
 		});
-
-		ddpClient.call(
-			"updateBackends",
-			[backendInfo],
-			function(err, res) {
-				if(err) {
-					console.log(err);
-				}
-			},
-			function() {
-			}
-		);
 	};
 };
 
