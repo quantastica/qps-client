@@ -18,7 +18,6 @@ Under development / experimental. If you find bugs **please report** here: https
 
 ## Install
 
-
 1. Create <a href="https://quantum-circuit.com" target="_blank">Quantum Programming Studio</a> account.
 
 2. Install <a href="https://www.rigetti.com/forest" target="_blank">Rigetti Forrest SDK</a> on your local machine OR get access to <a href="https://www.rigetti.com/qcs" target="_blank">Rigetti QCS</a> and SSH to your <a href="https://www.rigetti.com/qcs/docs/intro-to-qcs#qmi" target="_blank">QMI</a> (Quantum Machine Image).
@@ -32,7 +31,7 @@ npm install -g qps-client
 ```
 
 
-## Start qps-client
+## Usage
 
 ### Using with Rigetti Forest SDK installed on your local machine (QVM only)
 
@@ -50,3 +49,6 @@ qps-client --backends rigetti-qvm rigetti-qpu
 
 When started, qps-client will ask you to enter your <a href="https://quantum-circuit.com" target="_blank">Quantum Programming Studio</a> username and password. When successfully authenticated, you will be able to run circuits on your backend (simulator and/or quantum computer) directly from Quantum Programming Studio UI.
 
+See video:
+
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=TDpD3qTw23s" target="_blank"><img src="http://img.youtube.com/vi/TDpD3qTw23s/0.jpg" alt="QPS Client" width="480" height="360" border="10" /></a>
