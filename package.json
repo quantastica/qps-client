@@ -1,13 +1,32 @@
 {
   "name": "ddp-client",
-  "version": "1.0.0",
-  "description": "",
-  "main": "ddp-client.js",
+  "version": "0.9.0",
+  "description": "Quantum Programming Studio client",
+  "main": "qps-client.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/perak/qps-client"
+  },
+  "keywords": [
+    "quantum",
+    "qubit",
+    "qbit",
+    "simulator",
+    "emulator",
+    "qasm",
+    "openqasm",
+    "quil",
+    "pyquil"
+  ],
+  "preferGlobal": "true",
+  "bin": {
+    "qps-client": "cli.js"
+  },
+  "author": "Petar Korponaić <petar.korponaic@gmail.com>",
+  "license": "MIT",
   "dependencies": {
     "ddp": "^0.12.1",
     "ddp-login": "^1.0.10",

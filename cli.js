@@ -9,7 +9,7 @@ const optionDefinitions = [
   { name: "ssl", alias: "s", type: Boolean},
   { name: "account", alias: "a", type: String },
   { name: "pass", alias: "l", type: String },
-  { name: "backends", alias: "b", type: Array },
+  { name: "backends", alias: "b", type: String, multiple: true },
 
   { name: "python_executable", type: String},
   { name: "help", type: Boolean}
@@ -21,12 +21,14 @@ console.log("Quantum Programming Studio Client");
 var printUsage = function() {
 	console.log("");
 	console.log("Usage:");
-	console.log("\tqps-client [-h host] [-p port] [-s] [-a account] [-l password]");
-	console.log("\t\t-h, --host\tHost");
-	console.log("\t\t-p, --port\tPort");
-	console.log("\t\t-s, --ssl\tSSL");
+	console.log("\tqps-client [-h host] [-p port] [-s] [-a account] [-l password] [-b backend_name ...]");
+	console.log("\t\t-h, --host\tHost name. Default: quantum-circuit.com");
+	console.log("\t\t-p, --port\tPort number. Default: 443");
+	console.log("\t\t-s, --ssl\tSSL connection. Enabled by default if port is 443");
 	console.log("\t\t-a, --account\tAccount name (username or email)");
 	console.log("\t\t-l, --pass\tAccount password");
+
+	console.log("\t\t--backends\tList of available backends: \"rigetti-qvm\" and/or \"rigetti-qpu\". Default: \"rigetti-qvm\"");
 	console.log("\t\t--help\tPrint help");
 	console.log("");
 };
@@ -61,14 +63,15 @@ if(!args.python_executable) {
 	args.python_executable = "python";
 }
 
-// ---
-// !!! temporary fixed to Rigetti
-// ---
-args.backends = [
-	"rigetti-qvm",
-	"rigetti-qpu"
-];
-// ---
+if(!args.backends || !args.backends.length) {
+	// ---
+	// !!! Default is temporary fixed to Rigetti Forest
+	// ---
+	args.backends = [
+		"rigetti-qvm"
+	];	
+	// ---
+}
 
 // Connect
 

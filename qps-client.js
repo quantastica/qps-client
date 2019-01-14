@@ -220,7 +220,7 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 						shellExec(pythonExecutable + " -", pythonCode, function(e, r) {
 							var output = "";
 							if(e) {
-								output = e;
+								output = e.message;
 							} else {
 								output = r;
 							}
@@ -283,16 +283,21 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 
 		var backendInfo = {};
 
+		console.log("Backends:");
 		backends.map(function(backend) {
 			switch(backend) {
 				case "rigetti-qvm": {
-					// !!! need to obtain QVM status if possible
+					console.log(backend);
+
+					// !!! Implement QVM presence check
 					backendInfo.rigettiQvm = {
 						status: "OK"
 					};
 				}; break;
 
 				case "rigetti-qpu": {
+					console.log(backend);
+
 					backendInfo.rigettiQpu = {
 					};
 
@@ -344,12 +349,10 @@ if(typeof module != "undefined" && module.exports) {
 // output from QCS CLI - used when env DEV_MODE=1
 
 var _reservations = `
-
 UPCOMING COMPUTE BLOCKS
 ID    START                    END                      DURATION  LATTICE            PRICE
 903   2019-01-11 10:30 CET     2019-01-11 10:45 CET     15.00m    Aspen-1-4Q-B       $70.00
 904   2019-01-11 10:45 CET     2019-01-11 11:00 CET     15.00m    Aspen-1-2Q-B       $20.00
-
 `;
 
 
