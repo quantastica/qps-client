@@ -90,27 +90,43 @@ var parseFixedColTable = function(tableRaw) {
 };
 
 var parseRigettiReservations = function(reservationsRaw) {
-	var reservationsList = reservationsRaw.trim().split("\n");
-	if(reservationsList.length) {
-		reservationsList.shift();
-	}
-	reservationsRaw = reservationsList.join("\n");
+	var result = {
+		current: [],
+		upcoming: []
+	};
 
-	var reservations = parseFixedColTable(reservationsRaw);
+	var reservationTables = reservationsRaw.trim().split("\n\n");
 
-	reservations.map(function(reservation, index) {
-		for(var propertyName in reservation) {
-			var propertyValue = reservation[propertyName];
-			if(propertyName == "price") {
-				propertyValue = propertyValue.split("$").join("");
-				propertyValue = parseFloat(propertyValue);
+	reservationTables.map(function(tableRaw) {
+
+		var reservationsList = tableRaw.trim().split("\n");
+		if(reservationsList.length) {
+			var tableType = reservationsList[0].trim();
+			reservationsList.shift();
+		}
+		reservationsRaw = reservationsList.join("\n");
+
+		var reservations = parseFixedColTable(reservationsRaw);
+
+		reservations.map(function(reservation, index) {
+			for(var propertyName in reservation) {
+				var propertyValue = reservation[propertyName];
+				if(propertyName == "price") {
+					propertyValue = propertyValue.split("$").join("");
+					propertyValue = parseFloat(propertyValue);
+				}
+
+				reservations[index][propertyName] = propertyValue;
 			}
+		});
 
-			reservations[index][propertyName] = propertyValue;
+		switch(tableType) {
+			case "CURRENTLY RUNNING COMPUTE BLOCKS": result["current"] = reservations; break;
+			case "UPCOMING COMPUTE BLOCKS": result["upcoming"] = reservations; break;
 		}
 	});
 
-	return reservations;
+	return result;
 };
 
 var parseRigettiLattices = function(latticesRaw) {
@@ -228,7 +244,6 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 							updateBackendsOutput("rigetti", output);
 						});
 					}; break;
-
 				}
 			}
 		});
@@ -317,6 +332,33 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 						backendInfo.rigettiQpu.devices = parseRigettiLattices(_lattices);
 						backendInfo.rigettiQpu.reservations = parseRigettiReservations(_reservations);
 
+						backendInfo.rigettiQpu.devices.map(function(device) {
+							if(device.lattices) {
+								device.lattices.map(function(lattice) {
+									// Upcoming
+									var upcoming = [];
+									if(backendInfo.rigettiQpu.reservations && backendInfo.rigettiQpu.reservations.upcoming) {
+										upcoming = backendInfo.rigettiQpu.reservations.upcoming.filter(function(reservation) {
+											return reservation.lattice == lattice.name;
+										});
+									}
+									if(upcoming.length) {
+										lattice.reservation = "upcoming";
+									}
+									// Current
+									var current = [];
+									if(backendInfo.rigettiQpu.reservations && backendInfo.rigettiQpu.reservations.current) {
+										current = backendInfo.rigettiQpu.reservations.current.filter(function(reservation) {
+											return reservation.lattice == lattice.name;
+										});
+									}
+									if(current.length) {
+										lattice.reservation = "current";
+									}
+								});
+							}
+						});
+
 						ddpClient.call(
 							"updateBackends",
 							[backendInfo],
@@ -373,12 +415,24 @@ if(typeof module != "undefined" && module.exports) {
 // output from QCS CLI - used when env DEV_MODE=1
 
 var _reservations = `
+
+CURRENTLY RUNNING COMPUTE BLOCKS
+ID    START                    END                      DURATION  LATTICE            PRICE
+975   2019-01-16 13:45 CET     2019-01-16 14:00 CET     15.00m    Aspen-1-2Q-B       $20.00
+
+UPCOMING COMPUTE BLOCKS
+ID    START                    END                      DURATION  LATTICE            PRICE
+976   2019-01-16 18:30 CET     2019-01-16 18:45 CET     15.00m    Aspen-1-2Q-B       $20.00
+
+`;
+/*
+var _reservations = `
 UPCOMING COMPUTE BLOCKS
 ID    START                    END                      DURATION  LATTICE            PRICE
 903   2019-01-11 10:30 CET     2019-01-11 10:45 CET     15.00m    Aspen-1-4Q-B       $70.00
 904   2019-01-11 10:45 CET     2019-01-11 11:00 CET     15.00m    Aspen-1-2Q-B       $20.00
 `;
-
+*/
 
 var _lattices = `
 LATTICE
@@ -524,3 +578,8 @@ Name: Aspen-1-10Q-B
   Qubits: 1,2,10,11,12,13,14,15,16,17
   Price (per min.): $13.17
 `;
+
+// output from running on lattice (bell state at qubits 14 and 15)
+/*
+{14: array([0, 1, 1, 1]), 15: array([0, 1, 1, 1])}
+*/
