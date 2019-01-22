@@ -191,6 +191,36 @@ var parseRigettiLattices = function(latticesRaw) {
 	return deviceList;
 };
 
+var updateRigettiReservationInfo = function(info) {
+	info.devices.map(function(device) {
+		if(device.lattices) {
+			device.lattices.map(function(lattice) {
+				// Upcoming
+				var upcoming = [];
+				if(info.reservations && info.reservations.upcoming) {
+					upcoming = info.reservations.upcoming.filter(function(reservation) {
+						return reservation.lattice == lattice.name;
+					});
+				}
+				if(upcoming.length) {
+					lattice.reservation = "upcoming";
+				}
+				// Current
+				var current = [];
+				if(info.reservations && info.reservations.current) {
+					current = info.reservations.current.filter(function(reservation) {
+						return reservation.lattice == lattice.name;
+					});
+				}
+				if(current.length) {
+					lattice.reservation = "current";
+				}
+			});
+		}
+	});
+	return info;
+};
+
 var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecutable) {
 	host = host || "";
 	port = port || 80;
@@ -331,33 +361,7 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 					if(devMode) {
 						backendInfo.rigettiQpu.devices = parseRigettiLattices(_lattices);
 						backendInfo.rigettiQpu.reservations = parseRigettiReservations(_reservations);
-
-						backendInfo.rigettiQpu.devices.map(function(device) {
-							if(device.lattices) {
-								device.lattices.map(function(lattice) {
-									// Upcoming
-									var upcoming = [];
-									if(backendInfo.rigettiQpu.reservations && backendInfo.rigettiQpu.reservations.upcoming) {
-										upcoming = backendInfo.rigettiQpu.reservations.upcoming.filter(function(reservation) {
-											return reservation.lattice == lattice.name;
-										});
-									}
-									if(upcoming.length) {
-										lattice.reservation = "upcoming";
-									}
-									// Current
-									var current = [];
-									if(backendInfo.rigettiQpu.reservations && backendInfo.rigettiQpu.reservations.current) {
-										current = backendInfo.rigettiQpu.reservations.current.filter(function(reservation) {
-											return reservation.lattice == lattice.name;
-										});
-									}
-									if(current.length) {
-										lattice.reservation = "current";
-									}
-								});
-							}
-						});
+						backendInfo.rigettiQpu = updateRigettiReservationInfo(backendInfo.rigettiQpu);
 
 						ddpClient.call(
 							"updateBackends",
@@ -382,6 +386,7 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 										console.log(e);
 									} else {
 										backendInfo.rigettiQpu.reservations = parseRigettiReservations(reservations);
+										backendInfo.rigettiQpu = updateRigettiReservationInfo(backendInfo.rigettiQpu);
 
 										ddpClient.call(
 											"updateBackends",
