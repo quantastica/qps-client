@@ -1,6 +1,6 @@
 {
   "name": "qps-client",
-  "version": "0.9.9",
+  "version": "0.9.10",
   "description": "Quantum Programming Studio client",
   "main": "qps-client.js",
   "scripts": {
@@ -32,6 +32,6 @@
     "ddp": "^0.12.1",
     "ddp-login": "^1.0.10",
     "ejson": "^2.1.2",
-    "quantum-circuit": "^0.9.50"
+    "quantum-circuit": "^0.9.51"
   }
 }
