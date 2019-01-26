@@ -423,7 +423,7 @@ var _reservations = `
 
 CURRENTLY RUNNING COMPUTE BLOCKS
 ID    START                    END                      DURATION  LATTICE            PRICE
-975   2019-01-16 13:45 CET     2019-01-16 14:00 CET     15.00m    Aspen-1-2Q-B       $20.00
+975   2019-01-16 13:45 CET     2019-01-16 14:00 CET     15.00m    Aspen-1-5Q-C       $20.00
 
 UPCOMING COMPUTE BLOCKS
 ID    START                    END                      DURATION  LATTICE            PRICE

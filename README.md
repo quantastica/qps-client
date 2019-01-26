@@ -51,4 +51,4 @@ When started, qps-client will ask you to enter your <a href="https://quantum-cir
 
 See video:
 
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=TDpD3qTw23s" target="_blank"><img src="http://img.youtube.com/vi/TDpD3qTw23s/0.jpg" alt="QPS Client" width="480" height="360" border="10" /></a>
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=tbuvzv4Do6k" target="_blank"><img src="http://img.youtube.com/vi/tbuvzv4Do6k/0.jpg" alt="QPS Client" width="480" height="360" border="10" /></a>
