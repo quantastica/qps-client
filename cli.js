@@ -28,7 +28,7 @@ var printUsage = function() {
 	console.log("\t\t-a, --account\tAccount name (username or email)");
 	console.log("\t\t-l, --pass\tAccount password");
 
-	console.log("\t\t--backends\tList of available backends: \"rigetti-qvm\" and/or \"rigetti-qpu\". Default: \"rigetti-qvm\"");
+	console.log("\t\t-b, --backends\tList of available backends: rigetti-qvm rigetti-qpu qiskit-aer qiskit-ibmq");
 	console.log("\t\t--help\tPrint help");
 	console.log("");
 };
@@ -64,13 +64,8 @@ if(!args.python_executable) {
 }
 
 if(!args.backends || !args.backends.length) {
-	// ---
-	// !!! Default is temporary fixed to Rigetti Forest
-	// ---
-	args.backends = [
-		"rigetti-qvm"
-	];	
-	// ---
+	console.log("Please provide at least one backend. use --help switch for help.");
+	process.exit(1);
 }
 
 // Connect

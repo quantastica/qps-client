@@ -221,6 +221,18 @@ var updateRigettiReservationInfo = function(info) {
 	return info;
 };
 
+
+var parseQiskitBackends = function(backendsRaw) {
+	var backends = [];
+
+	backendsRaw.replace(/'([^']+)'/g, function(a, b) {
+	  backends.push(b);
+	});
+
+	return backends;
+};
+
+
 var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecutable) {
 	host = host || "";
 	port = port || 80;
@@ -272,6 +284,23 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 							}
 
 							updateBackendsOutput("rigetti", output);
+						});
+					}; break;
+
+					case "run_qiskit": {
+						var circuit = new QuantumCircuit();
+						circuit.load(message.circuit);
+
+						pythonCode = circuit.exportQiskit("", false, null, null, message.provider, message.backend);
+
+						shellExec(pythonExecutable + " -", pythonCode, function(e, r) {
+							var output = "";
+							if(e) {
+								output = e.message;
+							} else {
+								output = r;
+							}
+							updateBackendsOutput("qiskit", output);
 						});
 					}; break;
 				}
@@ -331,6 +360,77 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 		console.log("Backends:");
 		backends.map(function(backend) {
 			switch(backend) {
+				case "qiskit-aer": {
+					console.log(backend);
+
+					// !!! implement Aer presence check
+					backendInfo.qiskitAer = {
+						backends: []
+					};
+
+					pythonCode = "";
+					pythonCode += "from qiskit import Aer\n";
+					pythonCode += "print(Aer.backends())\n";
+
+					shellExec(pythonExecutable + " -", pythonCode, function(e, backends) {
+						var output = "";
+						if(e) {
+							console.log(e);
+						} else {
+							backendInfo.qiskitAer.backends = parseQiskitBackends(backends);
+
+							ddpClient.call(
+								"updateBackends",
+								[backendInfo],
+								function(err, res) {
+									if(err) {
+										console.log(err);
+									}
+								},
+								function() {
+								}
+							);
+						}
+					});
+
+				}; break;
+
+				case "qiskit-ibmq": {
+					console.log(backend);
+
+					// !!! implement IBMQ presence check
+					backendInfo.qiskitIBMQ = {
+						backends: []
+					};
+
+					pythonCode = "";
+					pythonCode += "from qiskit import IBMQ\n";
+					pythonCode += "IBMQ.load_accounts()\n";
+					pythonCode += "print(IBMQ.backends())\n";
+
+					shellExec(pythonExecutable + " -", pythonCode, function(e, backends) {
+						var output = "";
+						if(e) {
+							console.log(e);
+						} else {
+							backendInfo.qiskitIBMQ.backends = parseQiskitBackends(backends);
+
+							ddpClient.call(
+								"updateBackends",
+								[backendInfo],
+								function(err, res) {
+									if(err) {
+										console.log(err);
+									}
+								},
+								function() {
+								}
+							);
+						}
+					});
+
+				}; break;
+
 				case "rigetti-qvm": {
 					console.log(backend);
 
