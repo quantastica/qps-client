@@ -53,7 +53,7 @@ See video:
 
 ### Using with Qiskit (IBMQ or Aer)
 
-1. Install <a href="https://www.qiskit.com" target="_blank">Qiskit</a>
+1. Install <a href="https://qiskit.org/" target="_blank">Qiskit</a>
 
 2. Open your terminal and then:
 
