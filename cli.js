@@ -63,9 +63,8 @@ if(!args.python_executable) {
 	args.python_executable = "python";
 }
 
-if(!args.backends || !args.backends.length) {
-	console.log("Please provide at least one backend. use --help switch for help.");
-	process.exit(1);
+if(!args.backends) {
+	args.backends = [];
 }
 
 // Connect

@@ -330,7 +330,7 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 
 					console.log("Login successful.");
 
-					updateBackends();
+					updateBackends(backends);
 				}
 			}
 		);
@@ -350,15 +350,52 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 		);
 	};
 
-	var updateBackends = function() {
-		if(!backends.map) {
+	var detectBackends = function() {
+		var backendList = [];
+
+		var pythonCode = "";
+
+		console.log("Auto detecting backends...");
+
+		// Rigetti
+		pythonCode = "import pyquil\n";
+		shellExec(pythonExecutable + " -", pythonCode, function(e, result) {
+			var output = "";
+			if(!e) {
+				console.log("Found pyQuil");
+				backendList.push("rigetti-qvm");
+				backendList.push("rigetti-qpu");
+			}
+
+			// Qiskit
+			pythonCode = "import qiskit\n";
+			shellExec(pythonExecutable + " -", pythonCode, function(e, result) {
+				var output = "";
+				if(!e) {
+					console.log("Found Qiskit");
+					backendList.push("qiskit-aer");
+					backendList.push("qiskit-ibmq");
+				}
+
+				if(backendList.length) {
+					updateBackends(backendList);
+				}
+
+			});
+		});
+
+	};
+
+	var updateBackends = function(backendList) {
+		if(!backendList || !backendList.map || !backendList.length) {
+			detectBackends();
 			return;
 		}
 
 		var backendInfo = {};
 
 		console.log("Backends:");
-		backends.map(function(backend) {
+		backendList.map(function(backend) {
 			switch(backend) {
 				case "qiskit-aer": {
 					console.log(backend);
@@ -372,12 +409,12 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 					pythonCode += "from qiskit import Aer\n";
 					pythonCode += "print(Aer.backends())\n";
 
-					shellExec(pythonExecutable + " -", pythonCode, function(e, backends) {
+					shellExec(pythonExecutable + " -", pythonCode, function(e, bcks) {
 						var output = "";
 						if(e) {
 							console.log(e);
 						} else {
-							backendInfo.qiskitAer.backends = parseQiskitBackends(backends);
+							backendInfo.qiskitAer.backends = parseQiskitBackends(bcks);
 
 							ddpClient.call(
 								"updateBackends",
@@ -408,12 +445,12 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 					pythonCode += "IBMQ.load_accounts()\n";
 					pythonCode += "print(IBMQ.backends())\n";
 
-					shellExec(pythonExecutable + " -", pythonCode, function(e, backends) {
+					shellExec(pythonExecutable + " -", pythonCode, function(e, bcks) {
 						var output = "";
 						if(e) {
 							console.log(e);
 						} else {
-							backendInfo.qiskitIBMQ.backends = parseQiskitBackends(backends);
+							backendInfo.qiskitIBMQ.backends = parseQiskitBackends(bcks);
 
 							ddpClient.call(
 								"updateBackends",
