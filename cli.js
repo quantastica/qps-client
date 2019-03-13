@@ -17,6 +17,7 @@ const optionDefinitions = [
 
 console.log("");
 console.log("Quantum Programming Studio Client");
+console.log("https://quantum-circuit.com");
 
 var printUsage = function() {
 	console.log("");
@@ -24,7 +25,7 @@ var printUsage = function() {
 	console.log("\tqps-client [-h host] [-p port] [-s] [-a account] [-l password] [-b backend_name ...]");
 	console.log("\t\t-h, --host\tHost name. Default: quantum-circuit.com");
 	console.log("\t\t-p, --port\tPort number. Default: 443");
-	console.log("\t\t-s, --ssl\tSSL connection. Enabled by default if port is 443");
+	console.log("\t\t-s, --ssl\tSSL connection. Enabled by default if no port specified or if port is 443");
 	console.log("\t\t-a, --account\tAccount name (username or email)");
 	console.log("\t\t-l, --pass\tAccount password");
 

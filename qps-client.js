@@ -7,6 +7,8 @@ var QuantumCircuit = require("quantum-circuit");
 var shellExec = function(command, toStdin, callback) {
 	var args = command.split(" ");
 	var cmd = args[0];
+	var error = null;
+
 	args.shift();
 
 	var result = "";
@@ -27,14 +29,17 @@ var shellExec = function(command, toStdin, callback) {
     });
 
     child.on("error", function(err) {
-    	callback(err);
+		error = err;
     });
 
     child.on("close", function(code, signal) {
       if(code == 0) {
       	callback(null, result);
       } else {
-      	callback(new Error(result));
+      	if(!error) {
+      		error = new Error(result);
+      	}
+      	callback(error);
       }
     });
 };
@@ -226,7 +231,7 @@ var parseQiskitBackends = function(backendsRaw) {
 	var backends = [];
 
 	backendsRaw.replace(/'([^']+)'/g, function(a, b) {
-	  backends.push(b);
+		backends.push(b);
 	});
 
 	return backends;
@@ -361,7 +366,8 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 		pythonCode = "import pyquil\n";
 		shellExec(pythonExecutable + " -", pythonCode, function(e, result) {
 			var output = "";
-			if(!e) {
+			if(e) {
+			} else {
 				console.log("Found pyQuil");
 				backendList.push("rigetti-qvm");
 				backendList.push("rigetti-qpu");
@@ -371,7 +377,8 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 			pythonCode = "import qiskit\n";
 			shellExec(pythonExecutable + " -", pythonCode, function(e, result) {
 				var output = "";
-				if(!e) {
+				if(e) {
+				} else {
 					console.log("Found Qiskit");
 					backendList.push("qiskit-aer");
 					backendList.push("qiskit-ibmq");
@@ -379,6 +386,8 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 
 				if(backendList.length) {
 					updateBackends(backendList);
+				} else {
+					console.log("No backends found. Did you activated your virtual environment?");
 				}
 
 			});
@@ -512,30 +521,36 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 							}
 						);
 					} else {
-						shellExec("qcs lattices", null, function(e, lattices) {
+						shellExec("qcs", null, function(e, r) {
 							if(e) {
-								console.log(e);
+								console.log("Warning: \"rigetti-qpu\" backend not found. It is available only inside quantum machine image. Error running \"qcs\" CLI:", e.message);
 							} else {
-								backendInfo.rigettiQpu.devices = parseRigettiLattices(lattices);
-
-								shellExec("qcs reservations", null, function(e, reservations) {
+								shellExec("qcs lattices", null, function(e, lattices) {
 									if(e) {
-										console.log(e);
+										console.log("Error reading lattices:", e.message);
 									} else {
-										backendInfo.rigettiQpu.reservations = parseRigettiReservations(reservations);
-										backendInfo.rigettiQpu = updateRigettiReservationInfo(backendInfo.rigettiQpu);
+										backendInfo.rigettiQpu.devices = parseRigettiLattices(lattices);
 
-										ddpClient.call(
-											"updateBackends",
-											[backendInfo],
-											function(err, res) {
-												if(err) {
-													console.log(err);
-												}
-											},
-											function() {
+										shellExec("qcs reservations", null, function(e, reservations) {
+											if(e) {
+												console.log("Error reading reservations:", e.message);
+											} else {
+												backendInfo.rigettiQpu.reservations = parseRigettiReservations(reservations);
+												backendInfo.rigettiQpu = updateRigettiReservationInfo(backendInfo.rigettiQpu);
+
+												ddpClient.call(
+													"updateBackends",
+													[backendInfo],
+													function(err, res) {
+														if(err) {
+															console.log(err);
+														}
+													},
+													function() {
+													}
+												);
 											}
-										);
+										});
 									}
 								});
 							}
