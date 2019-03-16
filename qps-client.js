@@ -2,6 +2,8 @@ var DDP = require("ddp");
 var login = require("ddp-login");
 var spawn = require("child_process").spawn;
 var EJSON = require("ejson");
+var fs = require("fs");
+var path = require("path");
 var QuantumCircuit = require("quantum-circuit");
 
 var shellExec = function(command, toStdin, callback) {
@@ -12,36 +14,36 @@ var shellExec = function(command, toStdin, callback) {
 	args.shift();
 
 	var result = "";
-    var child = spawn(cmd, args);
+	var child = spawn(cmd, args);
 
-    if(toStdin) {
+	if(toStdin) {
 		child.stdin.setEncoding("utf-8");
-    	child.stdin.write(toStdin);
-    	child.stdin.end();
-    }
+		child.stdin.write(toStdin);
+		child.stdin.end();
+	}
 
-    child.stdout.on("data", function(message) {
-    	result += message;
-    });
+	child.stdout.on("data", function(message) {
+		result += message;
+	});
 
-    child.stderr.on("data", function(message) {
-    	result += message;
-    });
+	child.stderr.on("data", function(message) {
+		result += message;
+	});
 
-    child.on("error", function(err) {
+	child.on("error", function(err) {
 		error = err;
-    });
+	});
 
-    child.on("close", function(code, signal) {
-      if(code == 0) {
-      	callback(null, result);
-      } else {
-      	if(!error) {
-      		error = new Error(result);
-      	}
-      	callback(error);
-      }
-    });
+	child.on("close", function(code, signal) {
+		if(code == 0) {
+			callback(null, result);
+		} else {
+			if(!error) {
+				error = new Error(result);
+			}
+			callback(error);
+		}
+	});
 };
 
 var parseFixedColTable = function(tableRaw) {
@@ -246,15 +248,53 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 	pass = pass || null;
 	backends = backends || [];
 	pythonExecutable = pythonExecutable || "python";
-	devMode = process.env.DEV_MODE || false;
+
+	var devMode = process.env.DEV_MODE || false;
+	var tokenEnvVar = "QPS_LOGIN_TOKEN";
+	var configFilename = path.resolve(__dirname, ".qps-config.json");
+
+
+	var writeConfig = function() {
+		var config = {
+			token: process.env[tokenEnvVar]
+		};
+
+		try {
+			fs.writeFileSync(configFilename, JSON.stringify(config), "utf8");
+		} catch(e) {
+			console.log("Warning: Error writing configuration file. " + e.message);			
+		}
+	};
+
+	var readConfig = function() {
+		var configRaw = "";
+		try {
+			if(fs.existsSync(configFilename)) {
+				configRaw = fs.readFileSync(configFilename, "utf8");
+			}
+		} catch(e) {
+			console.log("Warning: Error reading configuration file. " + e.message);
+		}
+
+		var config = {};
+		if(configRaw) {			
+			try {
+				config = JSON.parse(configRaw);
+			} catch(e) {
+				console.log("Warning: Error parsing configuration file \"" + configFilename + "\". " + e.message);
+			}
+		};
+
+		process.env[tokenEnvVar] = config.token ? config.token : "";
+	};
+
+	readConfig();
 
 	var ddpClient = new DDP({
 		host: host,
 		port: port,
 		ssl: ssl
 	});
-
-	var token = "";
 
 	ddpClient.connect(function (err, wasReconnect) {
 		if(err) {
@@ -314,7 +354,7 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 
 		login(ddpClient,
 			{  // Options below are the defaults
-				 env: "METEOR_TOKEN",	// Name of an environment variable to check for a
+				 env: tokenEnvVar,		// Name of an environment variable to check for a
 										// token. If a token is found and is good,
 										// authentication will require no user interaction.
 				 method: "account",		// Login method: account, email, username or token
@@ -331,9 +371,11 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 					ddpClient.close();
 				} else {
 					// We are now logged in, with userInfo.token as our session auth token.
-					token = userInfo.token;
+					process.env[tokenEnvVar] = userInfo.token || "";
 
 					console.log("Login successful.");
+
+					writeConfig();
 
 					updateBackends(backends);
 				}
@@ -367,7 +409,9 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 		shellExec(pythonExecutable + " -", pythonCode, function(e, result) {
 			var output = "";
 			if(e) {
+				// No pyquil
 			} else {
+				// Found pyquil
 				console.log("Found pyQuil");
 				backendList.push("rigetti-qvm");
 				backendList.push("rigetti-qpu");
@@ -378,21 +422,43 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 			shellExec(pythonExecutable + " -", pythonCode, function(e, result) {
 				var output = "";
 				if(e) {
+					// No qiskit
 				} else {
+					// Found qiskit
 					console.log("Found Qiskit");
 					backendList.push("qiskit-aer");
 					backendList.push("qiskit-ibmq");
 				}
 
-				if(backendList.length) {
-					updateBackends(backendList);
-				} else {
-					console.log("No backends found. Did you activated your virtual environment?");
-				}
+				// Cirq
+				pythonCode = "import cirq\n";
+				shellExec(pythonExecutable + " -", pythonCode, function(e, result) {
+					var output = "";
+					if(e) {
+						// No cirq
+					} else {
+						// Found cirq
+						console.log("Found Cirq");
+						backendList.push("google-cirq");
+					}
 
+					if(backendList.length) {
+						if(backendList.indexOf("rigetti-qpu")) {
+							shellExec("qcs", null, function(e, r) {
+								if(e) {
+									backendList.splice(backendList.indexOf("rigetti-qpu"), 1);
+								}
+								updateBackends(backendList);
+							});
+						} else {
+							updateBackends(backendList);
+						}
+					} else {
+						console.log("No backends found. Did you activated your virtual environment?");
+					}
+				});
 			});
 		});
-
 	};
 
 	var updateBackends = function(backendList) {
@@ -556,6 +622,13 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 							}
 						});
 					}
+				}; break;
+
+				case "google-cirq": {
+					console.log(backend);
+
+					// Not implemented yet
+
 				}; break;
 			}
 		});
