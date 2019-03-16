@@ -1,6 +1,6 @@
 {
   "name": "qps-client",
-  "version": "0.9.19",
+  "version": "0.9.20",
   "description": "Quantum Programming Studio client",
   "main": "qps-client.js",
   "scripts": {
@@ -29,10 +29,13 @@
   "author": "Petar Korponaić <petar.korponaic@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "child_process": "^1.0.2",
     "command-line-args": "^5.0.2",
     "ddp": "^0.12.1",
     "ddp-login": "^1.0.10",
     "ejson": "^2.1.2",
-    "quantum-circuit": "^0.9.71"
+    "fs": "0.0.1-security",
+    "path": "^0.12.7",
+    "quantum-circuit": "^0.9.72"
   }
 }
