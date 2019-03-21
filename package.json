@@ -1,6 +1,6 @@
 {
   "name": "qps-client",
-  "version": "0.9.20",
+  "version": "0.9.21",
   "description": "Quantum Programming Studio client",
   "main": "qps-client.js",
   "scripts": {
@@ -20,7 +20,8 @@
     "openqasm",
     "quil",
     "pyquil",
-    "qiskit"
+    "qiskit",
+    "cirq"
   ],
   "preferGlobal": "true",
   "bin": {
@@ -34,6 +35,7 @@
     "ddp": "^0.12.1",
     "ddp-login": "^1.0.10",
     "ejson": "^2.1.2",
+    "env-paths": "^2.1.0",
     "fs": "0.0.1-security",
     "path": "^0.12.7",
     "quantum-circuit": "^0.9.72"

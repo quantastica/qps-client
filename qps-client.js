@@ -4,6 +4,7 @@ var spawn = require("child_process").spawn;
 var EJSON = require("ejson");
 var fs = require("fs");
 var path = require("path");
+var envPaths = require("env-paths");
 var QuantumCircuit = require("quantum-circuit");
 
 var shellExec = function(command, toStdin, callback) {
@@ -251,13 +252,22 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 
 	var devMode = process.env.DEV_MODE || false;
 	var tokenEnvVar = "QPS_LOGIN_TOKEN";
-	var configFilename = path.resolve(__dirname, ".qps-config.json");
+	var paths = envPaths("qps-client");
+	var configFilename = path.resolve(paths.config, ".qps-config.json");
 
 
 	var writeConfig = function() {
 		var config = {
 			token: process.env[tokenEnvVar]
 		};
+
+		try {
+			if(!fs.existsSync(paths.config)) {
+				fs.mkdirSync(paths.config);
+			}
+		} catch(e) {
+			// Failed but not reporting - writing will fail and will be reported.
+		}
 
 		try {
 			fs.writeFileSync(configFilename, JSON.stringify(config), "utf8");

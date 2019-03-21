@@ -15,7 +15,7 @@ QPS Client is running on your local machine (or in the cloud) where your quantum
 
 ## Install
 
-1. Make sure you have <a href="https://nodejs.org" target="_blank">node.js</a> and <a href="https://www.npmjs.com/" target="_blank">npm</a> installed (it is installed by default in QMI).
+1. Make sure you have <a href="https://nodejs.org" target="_blank">node.js</a> and <a href="https://www.npmjs.com/" target="_blank">npm</a> installed (it is installed by default in Rigetti QMI).
 
 2. Run following terminal command:
 
@@ -23,18 +23,29 @@ QPS Client is running on your local machine (or in the cloud) where your quantum
 npm install -g qps-client
 ```
 
+*Note: when installing in Rigetti QMI, you need to run install command as privileged user: `sudo install -g qps-client`*
+
 
 ## Usage
 
-### Using with Rigetti Forest SDK installed on your local machine (QVM only)
+### Using with Rigetti Forest SDK on your local machine (QVM only)
 
 1. Install <a href="https://www.rigetti.com/forest" target="_blank">Rigetti Forrest SDK</a>
 
-2. Open your terminal and execute following command:
+2. Run QVM (Quantum Virtual Machine) with:
+
+```
+qvm -S
+```
+
+3. Open one more terminal window and execute:
 
 ```
 qps-client
 ```
+
+When started, qps-client will ask you to enter your <a href="https://quantum-circuit.com" target="_blank">Quantum Programming Studio</a> username and password. When successfully authenticated, you will be able to run circuits on your backend (simulator and/or quantum computer) directly from Quantum Programming Studio UI.
+
 
 ### Using with Rigetti QCS (QVM and QPU)
 
@@ -69,4 +80,3 @@ When started, qps-client will ask you to enter your <a href="https://quantum-cir
 ## Support
 
 If you find bugs **please report** here: https://github.com/perak/qps-client/issues
-
