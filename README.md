@@ -23,7 +23,11 @@ QPS Client is running on your local machine (or in the cloud) where your quantum
 npm install -g qps-client
 ```
 
-*Note: when installing in Rigetti QMI, you need to run install command as privileged user: `sudo install -g qps-client`*
+When installing in Rigetti QMI, you need to run install command as privileged user:*
+
+```
+sudo npm install -g qps-client
+```
 
 
 ## Usage
@@ -44,7 +48,7 @@ qvm -S
 qps-client
 ```
 
-When started, qps-client will ask you to enter your <a href="https://quantum-circuit.com" target="_blank">Quantum Programming Studio</a> username and password. When successfully authenticated, you will be able to run circuits on your backend (simulator and/or quantum computer) directly from Quantum Programming Studio UI.
+When started, qps-client will ask you to enter your <a href="https://quantum-circuit.com" target="_blank">Quantum Programming Studio</a> username and password. When successfully authenticated, you will be able to run circuits on your locally running QVM directly from Quantum Programming Studio UI.
 
 
 ### Using with Rigetti QCS (QVM and QPU)
@@ -57,7 +61,7 @@ When started, qps-client will ask you to enter your <a href="https://quantum-cir
 qps-client
 ```
 
-When started, qps-client will ask you to enter your <a href="https://quantum-circuit.com" target="_blank">Quantum Programming Studio</a> username and password. When successfully authenticated, you will be able to run circuits on your backend (simulator and/or quantum computer) directly from Quantum Programming Studio UI.
+When started, qps-client will ask you to enter your <a href="https://quantum-circuit.com" target="_blank">Quantum Programming Studio</a> username and password. When successfully authenticated, you will be able to run circuits on QPU and QVM directly from Quantum Programming Studio UI.
 
 See video:
 
