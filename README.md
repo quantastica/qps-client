@@ -13,7 +13,7 @@ QPS Client is running on your local machine (or in the cloud) where your quantum
 ![Diagram 1](https://raw.githubusercontent.com/perak/qps-client/master/media/qps-client.png)
 
 
-## Install
+## Install (or upgrade to latest version)
 
 1. Make sure you have <a href="https://nodejs.org" target="_blank">node.js</a> and <a href="https://www.npmjs.com/" target="_blank">npm</a> installed (it is installed by default in Rigetti QMI).
 
@@ -28,7 +28,6 @@ When installing in Rigetti QMI, you need to run install command as privileged us
 ```
 sudo npm install -g qps-client
 ```
-
 
 ## Usage
 

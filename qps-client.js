@@ -308,8 +308,9 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 
 	ddpClient.connect(function (err, wasReconnect) {
 		if(err) {
-			console.log(err.message);
+			console.log("Unable to connect.", err.message ? err.message : "");
 			ddpClient.close();
+			return;
 		}
 
 		if(wasReconnect) {
