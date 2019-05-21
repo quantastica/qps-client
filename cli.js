@@ -30,6 +30,7 @@ var printUsage = function() {
 	console.log("\t\t-l, --pass\tAccount password");
 
 	console.log("\t\t-b, --backends\tList of available backends: rigetti-qvm rigetti-qpu qiskit-aer qiskit-ibmq google-cirq");
+	console.log("\t\t--python_executable\tPython executable. Default: python");
 	console.log("\t\t--help\tPrint help");
 	console.log("");
 };

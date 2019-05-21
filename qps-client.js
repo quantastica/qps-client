@@ -331,15 +331,20 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 
 						pythonCode = circuit.exportPyquil("", false, null, null, message.lattice, message.asQVM);
 
+						updateBackendsOutput("rigetti", "Running " + circuit.numQubits + " qubit circuit...\n", "busy");
+
 						shellExec(pythonExecutable + " -", pythonCode, function(e, r) {
 							var output = "";
+							var outputType = "";
 							if(e) {
 								output = e.message;
+								outputType = "error";
 							} else {
 								output = r;
+								outputType = "success";
 							}
 
-							updateBackendsOutput("rigetti", output);
+							updateBackendsOutput("rigetti", output, outputType);
 						});
 					}; break;
 
@@ -349,14 +354,19 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 
 						pythonCode = circuit.exportQiskit("", false, null, null, message.provider, message.backend);
 
+						updateBackendsOutput("qiskit", "Running " + circuit.numQubits + " qubit circuit...\n", "busy");
+
 						shellExec(pythonExecutable + " -", pythonCode, function(e, r) {
 							var output = "";
+							var outputType = "";
 							if(e) {
 								output = e.message;
+								outputType = "error";
 							} else {
 								output = r;
+								outputType = "success";
 							}
-							updateBackendsOutput("qiskit", output);
+							updateBackendsOutput("qiskit", output, outputType);
 						});
 					}; break;
 				}
@@ -394,10 +404,10 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 		);
 	});
 
-	var updateBackendsOutput = function(backendType, message) {
+	var updateBackendsOutput = function(backendType, message, messageType) {
 		ddpClient.call(
 			"updateBackendsOutput",
-			[backendType, message],
+			[backendType, message, messageType],
 			function(err, res) {
 				if(err) {
 					console.log(err);
