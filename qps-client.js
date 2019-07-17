@@ -464,7 +464,7 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 					}
 
 					if(backendList.length) {
-						if(backendList.indexOf("rigetti-qpu")) {
+						if(backendList.indexOf("rigetti-qpu") >= 0) {
 							shellExec("qcs", null, function(e, r) {
 								if(e) {
 									backendList.splice(backendList.indexOf("rigetti-qpu"), 1);
