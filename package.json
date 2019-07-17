@@ -1,6 +1,6 @@
 {
   "name": "qps-client",
-  "version": "0.9.28",
+  "version": "0.9.29",
   "description": "Quantum Programming Studio client",
   "main": "qps-client.js",
   "scripts": {
