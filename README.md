@@ -23,7 +23,7 @@ QPS Client is running on your local machine (or in the cloud) where your quantum
 npm install -g qps-client
 ```
 
-When installing in Rigetti QMI, you need to run install command as privileged user:*
+When installing in Rigetti QMI, you need to run install command as privileged user:
 
 ```
 sudo npm install -g qps-client
