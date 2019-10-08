@@ -425,58 +425,67 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 
 		console.log("Auto detecting backends...");
 
-		// Rigetti
-		pythonCode = "import pyquil\n";
-		shellExec(pythonExecutable + " -", pythonCode, function(e, result) {
-			var output = "";
+		// Qubit Toaster
+		var toasterExecutable = "qubit-toaster";
+		shellExec(toasterExecutable + " -v", null, function(e, result) {
 			if(e) {
-				// No pyquil
+				// No toaster
 			} else {
-				// Found pyquil
-				console.log("Found pyQuil");
-				backendList.push("rigetti-qvm");
-				backendList.push("rigetti-qpu");
+				// Found toaster
+				console.log("Found Qubit Toaster");
+				backendList.push("qubit-toaster");
 			}
 
-			// Qiskit
-			pythonCode = "import qiskit\n";
+			// Rigetti
+			pythonCode = "import pyquil\n";
 			shellExec(pythonExecutable + " -", pythonCode, function(e, result) {
-				var output = "";
 				if(e) {
-					// No qiskit
+					// No pyquil
 				} else {
-					// Found qiskit
-					console.log("Found Qiskit");
-					backendList.push("qiskit-aer");
-					backendList.push("qiskit-ibmq");
+					// Found pyquil
+					console.log("Found pyQuil");
+					backendList.push("rigetti-qvm");
+					backendList.push("rigetti-qpu");
 				}
 
-				// Cirq
-				pythonCode = "import cirq\n";
+				// Qiskit
+				pythonCode = "import qiskit\n";
 				shellExec(pythonExecutable + " -", pythonCode, function(e, result) {
-					var output = "";
 					if(e) {
-						// No cirq
+						// No qiskit
 					} else {
-						// Found cirq
-						console.log("Found Cirq");
-						backendList.push("google-cirq");
+						// Found qiskit
+						console.log("Found Qiskit");
+						backendList.push("qiskit-aer");
+						backendList.push("qiskit-ibmq");
 					}
 
-					if(backendList.length) {
-						if(backendList.indexOf("rigetti-qpu") >= 0) {
-							shellExec("qcs", null, function(e, r) {
-								if(e) {
-									backendList.splice(backendList.indexOf("rigetti-qpu"), 1);
-								}
-								updateBackends(backendList);
-							});
+					// Cirq
+					pythonCode = "import cirq\n";
+					shellExec(pythonExecutable + " -", pythonCode, function(e, result) {
+						if(e) {
+							// No cirq
 						} else {
-							updateBackends(backendList);
+							// Found cirq
+							console.log("Found Cirq");
+							backendList.push("google-cirq");
 						}
-					} else {
-						console.log("No backends found. Did you activated your virtual environment?");
-					}
+
+						if(backendList.length) {
+							if(backendList.indexOf("rigetti-qpu") >= 0) {
+								shellExec("qcs", null, function(e, r) {
+									if(e) {
+										backendList.splice(backendList.indexOf("rigetti-qpu"), 1);
+									}
+									updateBackends(backendList);
+								});
+							} else {
+								updateBackends(backendList);
+							}
+						} else {
+							console.log("No backends found. Did you activated your virtual environment?");
+						}
+					});
 				});
 			});
 		});
@@ -493,6 +502,26 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 		console.log("Backends:");
 		backendList.map(function(backend) {
 			switch(backend) {
+				case "qubit-toaster": {
+					console.log(backend);
+
+					backendInfo.qubitToaster = {
+						status: "OK"
+					};
+
+					ddpClient.call(
+						"updateBackends",
+						[backendInfo],
+						function(err, res) {
+							if(err) {
+								console.log(err);
+							}
+						},
+						function() {
+						}
+					);
+				}; break;
+
 				case "qiskit-aer": {
 					console.log(backend);
 

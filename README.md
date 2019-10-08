@@ -3,7 +3,7 @@ QPS Client
 
 ![QPS Logo](https://raw.githubusercontent.com/perak/qps-client/master/media/logo_color_white_bg.png)
 
-QPS Client allows you to connect <a href="https://quantum-circuit.com" target="_blank">Quantum Programming Studio</a> UI with <a href="https://www.rigetti.com/qcs" target="_blank">Rigetti QCS</a>, <a href="https://www.rigetti.com/forest" target="_blank">Rigetti Forrest SDK</a>, and <a href="https://qiskit.org/" target="_blank">IBM Qiskit</a>.
+QPS Client allows you to connect <a href="https://quantum-circuit.com" target="_blank">Quantum Programming Studio</a> UI with <a href="https://www.rigetti.com/qcs" target="_blank">Rigetti QCS</a>, <a href="https://www.rigetti.com/forest" target="_blank">Rigetti Forrest SDK</a>, <a href="https://qiskit.org/" target="_blank">IBM Qiskit</a>, and <a href="https://quantastica.com#simulators" target="_blank">Quantastica Qubit Toaster</a>.
 
 
 ## How it works?
@@ -79,6 +79,18 @@ qps-client
 
 When started, qps-client will ask you to enter your <a href="https://quantum-circuit.com" target="_blank">Quantum Programming Studio</a> username and password. When successfully authenticated, you will be able to run circuits on your backend (simulator and/or quantum computer) directly from Quantum Programming Studio UI.
 
+
+### Using with Qubit Toaster
+
+1. Install <a href="https://quantastica.com#simulators" target="_blank">Qubit Toaster</a>
+
+2. Open your terminal and execute following terminal command:
+
+```
+qps-client
+```
+
+When started, qps-client will ask you to enter your <a href="https://quantum-circuit.com" target="_blank">Quantum Programming Studio</a> username and password. When successfully authenticated, you will be able to run circuits on your backend directly from Quantum Programming Studio UI.
 
 ## Support
 
