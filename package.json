@@ -1,6 +1,6 @@
 {
   "name": "qps-client",
-  "version": "0.9.32",
+  "version": "0.9.33",
   "description": "Quantum Programming Studio client",
   "main": "qps-client.js",
   "scripts": {
@@ -38,6 +38,6 @@
     "env-paths": "^2.2.0",
     "fs": "0.0.1-security",
     "path": "^0.12.7",
-    "quantum-circuit": "^0.9.103"
+    "quantum-circuit": "^0.9.123"
   }
 }
