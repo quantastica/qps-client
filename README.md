@@ -95,3 +95,8 @@ When started, qps-client will ask you to enter your <a href="https://quantum-cir
 ## Support
 
 If you find bugs **please report** here: https://github.com/perak/qps-client/issues
+
+
+## License
+
+[MIT](LICENSE.txt)

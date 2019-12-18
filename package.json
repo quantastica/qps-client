@@ -1,6 +1,6 @@
 {
   "name": "qps-client",
-  "version": "0.9.33",
+  "version": "0.9.34",
   "description": "Quantum Programming Studio client",
   "main": "qps-client.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/perak/qps-client"
+    "url": "https://github.com/quantastica/qps-client"
   },
   "keywords": [
     "quantum",
@@ -27,7 +27,7 @@
   "bin": {
     "qps-client": "cli.js"
   },
-  "author": "Petar Korponaić <petar.korponaic@gmail.com>",
+  "author": "Quantastica <info@quantastica.com>",
   "license": "MIT",
   "dependencies": {
     "child_process": "^1.0.2",
@@ -38,6 +38,6 @@
     "env-paths": "^2.2.0",
     "fs": "0.0.1-security",
     "path": "^0.12.7",
-    "quantum-circuit": "^0.9.123"
+    "quantum-circuit": "^0.9.124"
   }
 }
