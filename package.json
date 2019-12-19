@@ -1,6 +1,6 @@
 {
   "name": "qps-client",
-  "version": "0.9.34",
+  "version": "0.9.35",
   "description": "Quantum Programming Studio client",
   "main": "qps-client.js",
   "scripts": {
@@ -12,16 +12,19 @@
   },
   "keywords": [
     "quantum",
+    "quantum computing",
     "qubit",
     "qbit",
     "simulator",
     "emulator",
     "qasm",
+    "qobj",
     "openqasm",
     "quil",
     "pyquil",
     "qiskit",
-    "cirq"
+    "cirq",
+    "qsharp"
   ],
   "preferGlobal": "true",
   "bin": {
@@ -29,6 +32,7 @@
   },
   "author": "Quantastica <info@quantastica.com>",
   "license": "MIT",
+  "homepage": "https://quantum-circuit.com/docs/qps_client",
   "dependencies": {
     "child_process": "^1.0.2",
     "command-line-args": "^5.1.1",

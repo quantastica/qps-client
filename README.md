@@ -1,7 +1,7 @@
 QPS Client
 ==========
 
-![QPS Logo](https://raw.githubusercontent.com/perak/qps-client/master/media/logo_color_white_bg.png)
+![QPS Logo](https://raw.githubusercontent.com/quantastica/qps-client/master/media/logo_color_white_bg.png)
 
 QPS Client allows you to connect <a href="https://quantum-circuit.com" target="_blank">Quantum Programming Studio</a> UI with <a href="https://www.rigetti.com/qcs" target="_blank">Rigetti QCS</a>, <a href="https://www.rigetti.com/forest" target="_blank">Rigetti Forrest SDK</a>, <a href="https://qiskit.org/" target="_blank">IBM Qiskit</a>, and <a href="https://quantastica.com#simulators" target="_blank">Quantastica Qubit Toaster</a>.
 
@@ -10,7 +10,7 @@ QPS Client allows you to connect <a href="https://quantum-circuit.com" target="_
 
 QPS Client is running on your local machine (or in the cloud) where your quantum programming environment is installed. It opens secure websocket connection with Quantum Programming Studio server and executes quantum circuits (that you design in the web UI) on your local simulator or on real quantum computer.
 
-![Diagram 1](https://raw.githubusercontent.com/perak/qps-client/master/media/qps-client.png)
+![Diagram 1](https://raw.githubusercontent.com/quantastica/qps-client/master/media/qps-client.png)
 
 
 ## Install (or upgrade to latest version)
@@ -94,7 +94,7 @@ When started, qps-client will ask you to enter your <a href="https://quantum-cir
 
 ## Support
 
-If you find bugs **please report** here: https://github.com/perak/qps-client/issues
+If you find bugs **please report** here: https://github.com/quantastica/qps-client/issues
 
 
 ## License
