@@ -567,8 +567,8 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 
 					pythonCode = "";
 					pythonCode += "from qiskit import IBMQ\n";
-					pythonCode += "IBMQ.load_account()\n";
-					pythonCode += "print(IBMQ.backends())\n";
+					pythonCode += "provider = IBMQ.load_account()\n";
+					pythonCode += "print(provider.backends())\n";
 
 					shellExec(pythonExecutable + " -", pythonCode, function(e, bcks) {
 						var output = "";
