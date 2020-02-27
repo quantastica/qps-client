@@ -12,6 +12,7 @@ const optionDefinitions = [
   { name: "backends", alias: "b", type: String, multiple: true },
 
   { name: "python_executable", type: String},
+  { name: "toaster_executable", type: String},
   { name: "help", type: Boolean}
 ];
 
@@ -31,6 +32,7 @@ var printUsage = function() {
 
 	console.log("\t\t-b, --backends\tList of available backends: qubit-toaster rigetti-qvm rigetti-qpu qiskit-aer qiskit-ibmq google-cirq");
 	console.log("\t\t--python_executable\tPython executable. Default: python");
+	console.log("\t\t--toaster_executable\tQubit Toaster executable. Default: qubit-toaster");
 	console.log("\t\t--help\tPrint help");
 	console.log("");
 };
@@ -65,10 +67,14 @@ if(!args.python_executable) {
 	args.python_executable = "python";
 }
 
+if(!args.toaster_executable) {
+	args.toaster_executable = "qubit-toaster";
+}
+
 if(!args.backends) {
 	args.backends = [];
 }
 
 // Connect
 
-QPSClient(args.host, args.port, args.ssl, args.account, args.pass, args.backends, args.python_executable);
+QPSClient(args.host, args.port, args.ssl, args.account, args.pass, args.backends, args.python_executable, args.toaster_executable);

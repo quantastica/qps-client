@@ -241,7 +241,7 @@ var parseQiskitBackends = function(backendsRaw) {
 };
 
 
-var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecutable) {
+var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecutable, toasterExecutable) {
 	host = host || "";
 	port = port || 80;
 	ssl = ssl || false;
@@ -249,6 +249,7 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 	pass = pass || null;
 	backends = backends || [];
 	pythonExecutable = pythonExecutable || "python";
+	toasterExecutable = toasterExecutable || "qubit-toaster";
 
 	var devMode = process.env.DEV_MODE || false;
 	var tokenEnvVar = "QPS_LOGIN_TOKEN";
@@ -321,7 +322,6 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 
 		ddpClient.on("message", function(msg) {
 			var message = EJSON.parse(msg);
-
 			if(message && message.command) {
 				switch(message.command) {
 
@@ -329,7 +329,7 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 						var circuit = new QuantumCircuit();
 						circuit.load(message.circuit);
 
-						pythonCode = circuit.exportPyquil("", false, null, null, message.lattice, message.asQVM);
+						var pythonCode = circuit.exportPyquil("", false, null, null, message.lattice, message.asQVM);
 
 						updateBackendsOutput("rigetti", "Running " + circuit.numQubits + " qubit circuit...\n", "busy");
 
@@ -352,7 +352,7 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 						var circuit = new QuantumCircuit();
 						circuit.load(message.circuit);
 
-						pythonCode = circuit.exportQiskit("", false, null, null, message.provider, message.backend);
+						var pythonCode = circuit.exportQiskit("", false, null, null, message.provider, message.backend);
 
 						updateBackendsOutput("qiskit", "Running " + circuit.numQubits + " qubit circuit...\n", "busy");
 
@@ -367,6 +367,28 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 								outputType = "success";
 							}
 							updateBackendsOutput("qiskit", output, outputType);
+						});
+					}; break;
+
+					case "run_toaster": {
+						var circuit = new QuantumCircuit();
+						circuit.load(message.circuit);
+
+						var toasterCode = JSON.stringify(circuit.exportRaw());
+
+						updateBackendsOutput("qubit-toaster", "Running " + circuit.numQubits + " qubit circuit...\n", "busy");
+
+						shellExec(toasterExecutable + " -", toasterCode, function(e, r) {
+							var output = "";
+							var outputType = "";
+							if(e) {
+								output = e.message;
+								outputType = "error";
+							} else {
+								output = r;
+								outputType = "success";
+							}
+							updateBackendsOutput("qubit-toaster", output, outputType);
 						});
 					}; break;
 				}

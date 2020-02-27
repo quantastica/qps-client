@@ -1,9 +1,10 @@
 {
   "name": "qps-client",
-  "version": "0.9.42",
+  "version": "0.9.43",
   "description": "Quantum Programming Studio client",
   "main": "qps-client.js",
   "scripts": {
+    "start": "node cli.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
