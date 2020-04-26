@@ -43,6 +43,6 @@
     "env-paths": "^2.2.0",
     "fs": "0.0.1-security",
     "path": "^0.12.7",
-    "quantum-circuit": "^0.9.145"
+    "quantum-circuit": "^0.9.147"
   }
 }

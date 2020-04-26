@@ -378,7 +378,7 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 
 						updateBackendsOutput("qubit-toaster", "Running " + circuit.numQubits + " qubit circuit...\n", "busy");
 
-						shellExec(toasterExecutable + " -", toasterCode, function(e, r) {
+						shellExec(toasterExecutable + " --shots 1024 -", toasterCode, function(e, r) {
 							var output = "";
 							var outputType = "";
 							if(e) {
