@@ -1,6 +1,6 @@
 {
   "name": "qps-client",
-  "version": "0.9.53",
+  "version": "0.9.54",
   "description": "Quantum Programming Studio client",
   "main": "qps-client.js",
   "scripts": {
@@ -36,13 +36,13 @@
   "homepage": "https://quantum-circuit.com/docs/qps_client",
   "dependencies": {
     "child_process": "^1.0.2",
-    "command-line-args": "^5.1.1",
+    "command-line-args": "^5.2.1",
     "ddp": "^0.12.1",
     "ddp-login": "^1.0.10",
-    "ejson": "^2.2.0",
-    "env-paths": "^2.2.0",
+    "ejson": "^2.2.2",
+    "env-paths": "^2.2.1",
     "fs": "0.0.1-security",
     "path": "^0.12.7",
-    "quantum-circuit": "^0.9.175"
+    "quantum-circuit": "^0.9.189"
   }
 }

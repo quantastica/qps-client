@@ -231,13 +231,7 @@ var updateRigettiReservationInfo = function(info) {
 
 
 var parseQiskitBackends = function(backendsRaw) {
-	var backends = [];
-
-	backendsRaw.replace(/'([^']+)'/g, function(a, b) {
-		backends.push(b);
-	});
-
-	return backends;
+	return (backendsRaw + "").trim().split("\n");
 };
 
 
@@ -554,7 +548,9 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 
 					pythonCode = "";
 					pythonCode += "from qiskit import Aer\n";
-					pythonCode += "print(Aer.backends())\n";
+					pythonCode += "for backend in Aer.backends():\n";
+					pythonCode += "    print(backend.name())\n";
+					pythonCode += "\n";
 
 					shellExec(pythonExecutable + " -", pythonCode, function(e, bcks) {
 						var output = "";
@@ -589,8 +585,12 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 
 					pythonCode = "";
 					pythonCode += "from qiskit import IBMQ\n";
-					pythonCode += "provider = IBMQ.load_account()\n";
-					pythonCode += "print(provider.backends())\n";
+					pythonCode += "IBMQ.load_account()\n";
+					pythonCode += "provider = IBMQ.get_provider(hub=\"ibm-q\", group=\"open\", project=\"main\")\n";
+					pythonCode += "backends = provider.backends(filters=lambda x: x.configuration().n_qubits >= 5)\n";
+					pythonCode += "for backend in backends:\n";
+					pythonCode += "    print(backend.name())\n";
+					pythonCode += "\n";
 
 					shellExec(pythonExecutable + " -", pythonCode, function(e, bcks) {
 						var output = "";
