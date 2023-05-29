@@ -364,6 +364,28 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 						});
 					}; break;
 
+					case "run_ionq": {
+						var circuit = new QuantumCircuit();
+						circuit.load(message.circuit);
+
+						var pythonCode = circuit.exportQiskit("", false, null, null, message.provider, message.backend);
+
+						updateBackendsOutput("ionq", "Running " + circuit.numQubits + " qubit circuit...\n", "busy");
+
+						shellExec(pythonExecutable + " -", pythonCode, function(e, r) {
+							var output = "";
+							var outputType = "";
+							if(e) {
+								output = e.message;
+								outputType = "error";
+							} else {
+								output = r;
+								outputType = "success";
+							}
+							updateBackendsOutput("ionq", output, outputType);
+						});
+					}; break;
+
 					case "run_toaster": {
 						var circuit = new QuantumCircuit();
 						circuit.load(message.circuit);
@@ -476,31 +498,43 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 						backendList.push("qiskit-ibmq");
 					}
 
-					// Cirq
-					pythonCode = "import cirq\n";
+					pythonCode = "import qiskit_ionq\n";
 					shellExec(pythonExecutable + " -", pythonCode, function(e, result) {
 						if(e) {
-							// No cirq
+							console.log(e);
+							// No ionq
 						} else {
-							// Found cirq
-							console.log("Found Cirq");
-							backendList.push("google-cirq");
+							// Found ionq
+							console.log("Found IONQ (Qiskit)");
+							backendList.push("qiskit-ionq");
 						}
 
-						if(backendList.length) {
-							if(backendList.indexOf("rigetti-qpu") >= 0) {
-								shellExec("qcs", null, function(e, r) {
-									if(e) {
-										backendList.splice(backendList.indexOf("rigetti-qpu"), 1);
-									}
-									updateBackends(backendList);
-								});
+						// Cirq
+						pythonCode = "import cirq\n";
+						shellExec(pythonExecutable + " -", pythonCode, function(e, result) {
+							if(e) {
+								// No cirq
 							} else {
-								updateBackends(backendList);
+								// Found cirq
+								console.log("Found Cirq");
+								backendList.push("google-cirq");
 							}
-						} else {
-							console.log("No backends found. Did you activated your virtual environment?");
-						}
+
+							if(backendList.length) {
+								if(backendList.indexOf("rigetti-qpu") >= 0) {
+									shellExec("qcs", null, function(e, r) {
+										if(e) {
+											backendList.splice(backendList.indexOf("rigetti-qpu"), 1);
+										}
+										updateBackends(backendList);
+									});
+								} else {
+									updateBackends(backendList);
+								}
+							} else {
+								console.log("No backends found. Did you activated your virtual environment?");
+							}
+						});
 					});
 				});
 			});
@@ -613,6 +647,44 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 						}
 					});
 
+				}; break;
+
+				case "qiskit-ionq": {
+					console.log(backend);
+
+					// !!! implement IONQ presence check
+					backendInfo.qiskitIONQ = {
+						backends: []
+					};
+
+					pythonCode = "";
+					pythonCode += "from qiskit_ionq import IonQProvider\n";
+					pythonCode += "provider = IonQProvider()\n";
+					pythonCode += "backends = provider.backends()\n";
+					pythonCode += "for backend in backends:\n";
+					pythonCode += "    print(backend)\n";
+					pythonCode += "\n";
+
+					shellExec(pythonExecutable + " -", pythonCode, function(e, bcks) {
+						var output = "";
+						if(e) {
+							console.log(e);
+						} else {
+							backendInfo.qiskitIONQ.backends = parseQiskitBackends(bcks);
+
+							ddpClient.call(
+								"updateBackends",
+								[backendInfo],
+								function(err, res) {
+									if(err) {
+										console.log(err);
+									}
+								},
+								function() {
+								}
+							);
+						}
+					});
 				}; break;
 
 				case "rigetti-qvm": {
