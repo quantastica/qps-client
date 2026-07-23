@@ -501,7 +501,6 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 					pythonCode = "import qiskit_ionq\n";
 					shellExec(pythonExecutable + " -", pythonCode, function(e, result) {
 						if(e) {
-							console.log(e);
 							// No ionq
 						} else {
 							// Found ionq
@@ -589,7 +588,7 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 					shellExec(pythonExecutable + " -", pythonCode, function(e, bcks) {
 						var output = "";
 						if(e) {
-							console.log(e);
+							// Unable to list backends
 						} else {
 							backendInfo.qiskitAer.backends = parseQiskitBackends(bcks);
 
@@ -629,7 +628,7 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 					shellExec(pythonExecutable + " -", pythonCode, function(e, bcks) {
 						var output = "";
 						if(e) {
-							console.log(e);
+							// Unable to list backends
 						} else {
 							backendInfo.qiskitIBMQ.backends = parseQiskitBackends(bcks);
 
@@ -668,7 +667,7 @@ var QPSClient = function(host, port, ssl, account, pass, backends, pythonExecuta
 					shellExec(pythonExecutable + " -", pythonCode, function(e, bcks) {
 						var output = "";
 						if(e) {
-							console.log(e);
+							// Unable to list backends
 						} else {
 							backendInfo.qiskitIONQ.backends = parseQiskitBackends(bcks);
 
